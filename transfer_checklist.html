@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transfer Student Checklist</title>
+    <style>
+        :root {
+            --bg-color: #f5f5f7;
+            --text-main: #1d1d1f;
+            --text-muted: #86868b;
+            --card-bg: rgba(255, 255, 255, 0.7);
+            --blue: #0071e3;
+            --green: #34c759;
+            --radius: 18px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 600;
+            letter-spacing: -0.003em;
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+
+        /* Language Tabs */
+        .tabs-container {
+            width: 100%;
+            max-width: 700px;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding-bottom: 10px;
+            scrollbar-width: none; /* Firefox */
+        }
+        .tabs-container::-webkit-scrollbar {
+            display: none; /* Safari and Chrome */
+        }
+        
+        .tabs {
+            display: inline-flex;
+            gap: 8px;
+            background: #e8e8ed;
+            padding: 6px;
+            border-radius: 20px;
+        }
+
+        .tab {
+            padding: 8px 16px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+            user-select: none;
+        }
+
+        .tab.active {
+            background: #ffffff;
+            color: var(--text-main);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Checklist Cards */
+        .card {
+            width: 100%;
+            max-width: 660px;
+            background: var(--card-bg);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: transform 0.2s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.01);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #e5e5ea;
+            padding-bottom: 12px;
+        }
+
+        .item {
+            display: flex;
+            align-items: flex-start;
+            padding: 14px 0;
+            border-bottom: 1px solid #e5e5ea;
+            gap: 16px;
+            transition: opacity 0.3s;
+        }
+
+        .item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .checkbox-container {
+            padding-top: 2px;
+        }
+
+        .checkbox {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 1.5px solid var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .checkbox svg {
+            width: 14px;
+            height: 14px;
+            fill: white;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.2s ease;
+        }
+
+        .item.checked .checkbox {
+            background: var(--green);
+            border-color: var(--green);
+        }
+
+        .item.checked .checkbox svg {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .item.checked .text-content h3,
+        .item.checked .text-content p {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .text-content {
+            flex: 1;
+        }
+
+        .text-content h3 {
+            margin: 0 0 4px 0;
+            font-size: 16px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .text-content p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--text-muted);
+            transition: color 0.3s;
+        }
+
+        /* Buttons & Interactions */
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 10px;
+            padding: 8px 16px;
+            background: rgba(0, 113, 227, 0.08);
+            color: var(--blue);
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: background 0.2s;
+        }
+
+        .action-btn:hover {
+            background: rgba(0, 113, 227, 0.15);
+        }
+
+        .action-btn svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+        }
+
+        .zelle-box {
+            display: none;
+            margin-top: 12px;
+            padding: 16px;
+            background: #f5f5f7;
+            border-radius: 12px;
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--text-main);
+            border: 1px solid #e5e5ea;
+            animation: slideDown 0.3s ease forwards;
+        }
+
+        .zelle-box.active {
+            display: block;
+        }
+
+        .zelle-icon {
+            font-weight: bold;
+            color: #7417ea; /* Zelle Purple */
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Confetti */
+        .progress-container {
+            width: 100%;
+            max-width: 660px;
+            margin-bottom: 20px;
+        }
+        .progress-bar {
+            height: 6px;
+            background: #e5e5ea;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--green);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+        .progress-text {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: right;
+            margin-top: 6px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    <h1 id="main-title">Transfer Student Checklist</h1>
+
+    <div class="tabs-container">
+        <div class="tabs" id="lang-tabs">
+            <div class="tab active" data-lang="en">English</div>
+            <div class="tab" data-lang="es">Español</div>
+            <div class="tab" data-lang="zh">中文</div>
+            <div class="tab" data-lang="ko">한국어</div>
+            <div class="tab" data-lang="th">ไทย</div>
+            <div class="tab" data-lang="tr">Türkçe</div>
+            <div class="tab" data-lang="hi">हिन्दी</div>
+            <div class="tab" data-lang="bn">বাংলা</div>
+            <div class="tab" data-lang="kk">Қазақша</div>
+        </div>
+    </div>
+
+    <div class="progress-container">
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        <div class="progress-text" id="progress-text">0/9 Completed</div>
+    </div>
+
+    <!-- Category 1: Admissions -->
+    <div class="card">
+        <div class="card-title" id="cat1-title">1. Admissions Documents</div>
+        
+        <div class="item" onclick="toggleCheck(this)">
+            <div class="checkbox-container"><div class="checkbox"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div></div>
+            <div class="text-content">
+                <h3 id="t-appForm">Application Form</h3>
+                <a href="https://drive.google.com/file/d/1WWNilI5HXo2N30afnEFt3GyHa5IISrr4/view?usp=sharing" target="_blank" class="action-btn" onclick="event.stopPropagation()">
+                    <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                    <span id="t-btnDownload1">Download Form</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="item" onclick="toggleCheck(this)">
+            <div class="checkbox-container"><div class="checkbox"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div></div>
+            <div class="text-content">
+                <h3 id="t-fee">$100 Application Fee</h3>
+                <button class="action-btn" onclick="toggleZelle(event)">
+                    <span id="t-btnPay">How to Pay</span>
+                </button>
+                <div class="zelle-box" id="zelle-box" onclick="event.stopPropagation()">
+                    <span class="zelle-icon">Zelle</span>
+                    <span id="t-zelleInfo">Account Name: DREAMIT ESL, INC<br>Zelle account: 917-717-0385</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="item" onclick="toggleCheck(this)">
+            <div class="checkbox-container"><div class="checkbox"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div></div>
+            <div class="text-content">
+                <h3 id="t-edu">Education Credential</h3>
+                <p id="t-eduSub">High school diploma or higher degree</p>
+            </div>
+        </div>
+
+        <div class="item" onclick="toggleCheck(this)">
+            <div class="checkbox-container"><div class="checkbox"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div></div>
+            <div class="text-content">
+                <h3 id="t-accept">Acceptance Letter</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category 2: Legal -->
+    <div class="card">
+        <div class="card-title" id="cat2-title">2. Identity & Legal</div>
+        
+        <div class="item" onclick="toggleCheck(this)">
+            <div class="checkbox-container"><div class="checkbox"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div></div>
+            <div class="text-content">
+                <h3 id="t-passport">Passport</h3>
+                <p id="t-passportSub">Must be valid for the next 6 months</p>
+            </div>
+        </div>
+
+        <div class="item" onclick="toggleCheck(this)">
+            <div class="checkbox-container"><div class="checkbox"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div></div>
+            <div class="text-content">
+                <h3 id="t-visa">Visa</h3>
+                <p id="t-visaSub">Current visa page in your passport</p>
+            </div>
+        </div>
+
+        <div class="item" onclick="toggleCheck(this)">
+            <div class="checkbox-container"><div class="checkbox"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div></div>
+            <div class="text-content">
+                <h3 id="t-i94">I-94 Form</h3>
+                <p id="t-i94Sub">Official Arrival/Departure Record</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category 3: Financials -->
+    <div class="card">
+        <div class="card-title" id="cat3-title">3. Financial Documents</div>
+        
+        <div class="item" onclick="toggleCheck(this)">
+            <div class="checkbox-container"><div class="checkbox"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div></div>
+            <div class="text-content">
+                <h3 id="t-bank">Bank Statement</h3>
+                <p id="t-bankSub">From the last 60 days. At least $15,000 (+$3,500 per dependent)</p>
+            </div>
+        </div>
+
+        <div class="item" onclick="toggleCheck(this)">
+            <div class="checkbox-container"><div class="checkbox"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div></div>
+            <div class="text-content">
+                <h3 id="t-sponsor">Financial Support Letter</h3>
+                <p id="t-sponsorSub">Required if you have a sponsor</p>
+                <a href="https://drive.google.com/file/d/1rV3Jbkq4Lz75ktgDcuB4n4W-tIpY4EJ4/view?usp=sharing" target="_blank" class="action-btn" onclick="event.stopPropagation()">
+                    <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                    <span id="t-btnDownload2">Download Letter</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            en: {
+                title: "Transfer Student Checklist", cat1: "1. Admissions Documents", appForm: "Application Form", btnDownload1: "Download Form",
+                fee: "$100 Application Fee", btnPay: "How to Pay", zelleInfo: "Account Name: DREAMIT ESL, INC<br>Zelle account: 917-717-0385",
+                edu: "Education Credential", eduSub: "High school diploma or higher degree", accept: "Acceptance Letter",
+                cat2: "2. Identity & Legal", passport: "Passport", passportSub: "Must be valid for the next 6 months", visa: "Visa", visaSub: "Current visa page in your passport", i94: "I-94 Form", i94Sub: "Official Arrival/Departure Record",
+                cat3: "3. Financial Documents", bank: "Bank Statement", bankSub: "From the last 60 days. At least $15,000 (+$3,500 per dependent)", sponsor: "Financial Support Letter", sponsorSub: "Required if you have a sponsor", btnDownload2: "Download Letter", progress: "Completed"
+            },
+            es: {
+                title: "Lista de Verificación de Transferencia", cat1: "1. Documentos de Admisión", appForm: "Formulario de Solicitud", btnDownload1: "Descargar",
+                fee: "Tarifa de Solicitud de $100", btnPay: "Cómo Pagar", zelleInfo: "Nombre de cuenta: DREAMIT ESL, INC<br>Cuenta Zelle: 917-717-0385",
+                edu: "Credencial Educativa", eduSub: "Diploma de escuela secundaria o superior", accept: "Carta de Aceptación",
+                cat2: "2. Identidad y Legal", passport: "Pasaporte", passportSub: "Válido por los próximos 6 meses", visa: "Visa", visaSub: "Página de visa actual", i94: "Formulario I-94", i94Sub: "Registro Oficial de Llegada/Salida",
+                cat3: "3. Documentos Financieros", bank: "Estado de Cuenta Bancaria", bankSub: "Últimos 60 días. Mínimo $15,000 (+ $3,500 por dependiente)", sponsor: "Carta de Apoyo Financiero", sponsorSub: "Si tiene un patrocinador", btnDownload2: "Descargar", progress: "Completado"
+            },
+            zh: {
+                title: "转学新生材料清单", cat1: "1. 录取文件", appForm: "申请表", btnDownload1: "下载表格",
+                fee: "$100 申请费", btnPay: "支付方式", zelleInfo: "账户名: DREAMIT ESL, INC<br>Zelle 账号: 917-717-0385",
+                edu: "学历证明", eduSub: "高中毕业证或更高学位", accept: "录取通知书",
+                cat2: "2. 身份与法律文件", passport: "护照", passportSub: "未来6个月内有效", visa: "签证", visaSub: "护照内的签证页", i94: "I-94 表格", i94Sub: "官方出入境记录",
+                cat3: "3. 财务文件", bank: "银行对账单", bankSub: "最近60天。至少 $15,000 (每位家属 +$3,500)", sponsor: "资金支持信", sponsorSub: "如有赞助人则需要", btnDownload2: "下载支持信", progress: "已完成"
+            },
+            ko: {
+                title: "편입생 체크리스트", cat1: "1. 입학 서류", appForm: "지원서", btnDownload1: "양식 다운로드",
+                fee: "$100 지원 수수료", btnPay: "결제 방법", zelleInfo: "계좌명: DREAMIT ESL, INC<br>Zelle 계좌: 917-717-0385",
+                edu: "학력 증명서", eduSub: "고등학교 졸업장 또는 그 이상", accept: "입학 허가서",
+                cat2: "2. 신분 및 법적 서류", passport: "여권", passportSub: "최소 6개월 이상 유효해야 함", visa: "비자", visaSub: "여권 내 현재 비자 사본", i94: "I-94 양식", i94Sub: "공식 출입국 기록",
+                cat3: "3. 재정 서류", bank: "은행 잔고 증명서", bankSub: "최근 60일 이내. 최소 $15,000 (동반 가족 1인당 +$3,500)", sponsor: "재정 지원서", sponsorSub: "스폰서가 있는 경우 필요", btnDownload2: "지원서 다운로드", progress: "완료됨"
+            },
+            th: {
+                title: "รายการตรวจสอบสำหรับนักเรียนโอนย้าย", cat1: "1. เอกสารการรับสมัคร", appForm: "แบบฟอร์มใบสมัคร", btnDownload1: "ดาวน์โหลดแบบฟอร์ม",
+                fee: "ค่าธรรมเนียมการสมัคร $100", btnPay: "วิธีการชำระเงิน", zelleInfo: "ชื่อบัญชี: DREAMIT ESL, INC<br>บัญชี Zelle: 917-717-0385",
+                edu: "เอกสารรับรองวุฒิการศึกษา", eduSub: "ประกาศนียบัตรมัธยมปลายหรือสูงกว่า", accept: "จดหมายตอบรับ",
+                cat2: "2. เอกสารยืนยันตัวตน", passport: "หนังสือเดินทาง", passportSub: "ต้องมีอายุเหลือไม่ต่ำกว่า 6 เดือน", visa: "วีซ่า", visaSub: "หน้าวีซ่าปัจจุบันในหนังสือเดินทาง", i94: "แบบฟอร์ม I-94", i94Sub: "บันทึกการเดินทางเข้า/ออก",
+                cat3: "3. เอกสารทางการเงิน", bank: "รายการเดินบัญชี", bankSub: "ย้อนหลัง 60 วัน ขั้นต่ำ $15,000 (+ $3,500 ต่อผู้ติดตาม)", sponsor: "จดหมายรับรองทางการเงิน", sponsorSub: "หากมีผู้สนับสนุน", btnDownload2: "ดาวน์โหลดจดหมาย", progress: "เสร็จสิ้น"
+            },
+            tr: {
+                title: "Transfer Öğrenci Kontrol Listesi", cat1: "1. Kabul Belgeleri", appForm: "Başvuru Formu", btnDownload1: "Formu İndir",
+                fee: "$100 Başvuru Ücreti", btnPay: "Nasıl Ödenir", zelleInfo: "Hesap Adı: DREAMIT ESL, INC<br>Zelle hesabı: 917-717-0385",
+                edu: "Eğitim Belgesi", eduSub: "Lise diploması veya daha üstü", accept: "Kabul Mektubu",
+                cat2: "2. Kimlik ve Yasal Belgeler", passport: "Pasaport", passportSub: "Önümüzdeki 6 ay geçerli olmalı", visa: "Vize", visaSub: "Pasaportunuzdaki vize sayfası", i94: "I-94 Formu", i94Sub: "Resmi Giriş/Çıkış Kaydı",
+                cat3: "3. Finansal Belgeler", bank: "Banka Hesap Özeti", bankSub: "Son 60 gün. En az 15.000$ (bakmakla yükümlü olunan her kişi için +3.500$)", sponsor: "Maddi Destek Mektubu", sponsorSub: "Sponsorunuz varsa gereklidir", btnDownload2: "Mektubu İndir", progress: "Tamamlandı"
+            },
+            hi: {
+                title: "ट्रांसफर छात्र चेकलिस्ट", cat1: "1. प्रवेश दस्तावेज़", appForm: "आवेदन पत्र", btnDownload1: "फॉर्म डाउनलोड करें",
+                fee: "$100 आवेदन शुल्क", btnPay: "भुगतान कैसे करें", zelleInfo: "खाते का नाम: DREAMIT ESL, INC<br>Zelle खाता: 917-717-0385",
+                edu: "शिक्षा क्रेडेंशियल", eduSub: "हाई स्कूल डिप्लोमा या उच्च डिग्री", accept: "स्वीकृति पत्र",
+                cat2: "2. पहचान और कानूनी", passport: "पासपोर्ट", passportSub: "अगले 6 महीनों के लिए वैध होना चाहिए", visa: "वीजा", visaSub: "पासपोर्ट में वर्तमान वीजा पृष्ठ", i94: "I-94 फॉर्म", i94Sub: "आधिकारिक आगमन/प्रस्थान रिकॉर्ड",
+                cat3: "3. वित्तीय दस्तावेज़", bank: "बैंक स्टेटमेंट", bankSub: "पिछले 60 दिन। कम से कम $15,000 (प्रति आश्रित +$3,500)", sponsor: "वित्तीय सहायता पत्र", sponsorSub: "यदि आपका कोई प्रायोजक है तो आवश्यक है", btnDownload2: "पत्र डाउनलोड करें", progress: "पूर्ण हुआ"
+            },
+            bn: {
+                title: "ট্রান্সফার স্টুডেন্ট চেকলিস্ট", cat1: "1. ভর্তির কাগজপত্র", appForm: "আবেদনপত্র", btnDownload1: "ফর্ম ডাউনলোড করুন",
+                fee: "$100 আবেদন ফি", btnPay: "কিভাবে পে করবেন", zelleInfo: "অ্যাকাউন্টের নাম: DREAMIT ESL, INC<br>Zelle অ্যাকাউন্ট: 917-717-0385",
+                edu: "শিক্ষাগত যোগ্যতা", eduSub: "হাই স্কুল ডিপ্লোমা বা উচ্চতর ডিগ্রি", accept: "অ্যাকসেপ্টেন্স লেটার",
+                cat2: "2. পরিচয় এবং আইনি", passport: "পাসপোর্ট", passportSub: "পরবর্তী 6 মাসের জন্য বৈধ হতে হবে", visa: "ভিসা", visaSub: "আপনার পাসপোর্টে বর্তমান ভিসার পৃষ্ঠা", i94: "I-94 ফর্ম", i94Sub: "অফিসিয়াল আগমন/প্রস্থান রেকর্ড",
+                cat3: "3. আর্থিক কাগজপত্র", bank: "ব্যাংক স্টেটমেন্ট", bankSub: "গত ৬০ দিনের। অন্তত $15,000 (প্রতি নির্ভরশীল +$3,500)", sponsor: "আর্থিক সহায়তার চিঠি", sponsorSub: "আপনার যদি স্পন্সর থাকে তবে প্রয়োজন", btnDownload2: "চিঠি ডাউনলোড করুন", progress: "সম্পন্ন"
+            },
+            kk: {
+                title: "Ауысатын студенттер тізімі", cat1: "1. Қабылдау құжаттары", appForm: "Өтініш формасы", btnDownload1: "Форманы жүктеу",
+                fee: "$100 Өтініш ақысы", btnPay: "Қалай төлеу керек", zelleInfo: "Шот атауы: DREAMIT ESL, INC<br>Zelle шоты: 917-717-0385",
+                edu: "Білім туралы құжат", eduSub: "Орта мектеп дипломы немесе одан жоғары", accept: "Қабылдау хаты",
+                cat2: "2. Жеке куәлік және заңдық", passport: "Төлқұжат", passportSub: "Келесі 6 айға жарамды болуы керек", visa: "Виза", visaSub: "Төлқұжаттағы ағымдағы виза", i94: "I-94 Формасы", i94Sub: "Келу/Кету туралы ресми жазба",
+                cat3: "3. Қаржылық құжаттар", bank: "Банк үзіндісі", bankSub: "Соңғы 60 күн. Кем дегенде $15,000 (+ әр асырауындағы адамға $3,500)", sponsor: "Қаржылық қолдау хаты", sponsorSub: "Егер демеушіңіз болса қажет", btnDownload2: "Хатты жүктеу", progress: "Аяқталды"
+            }
+        };
+
+        const totalItems = document.querySelectorAll('.item').length;
+        let checkedItems = 0;
+
+        function updateProgress() {
+            const percent = (checkedItems / totalItems) * 100;
+            document.getElementById('progress-fill').style.width = percent + '%';
+            
+            // Get current language word for "Completed"
+            const currentLang = document.querySelector('.tab.active').getAttribute('data-lang');
+            const compText = translations[currentLang].progress;
+            
+            document.getElementById('progress-text').innerText = `${checkedItems}/${totalItems} ${compText}`;
+        }
+
+        function toggleCheck(element) {
+            if(element.classList.contains('checked')) {
+                element.classList.remove('checked');
+                checkedItems--;
+            } else {
+                element.classList.add('checked');
+                checkedItems++;
+            }
+            updateProgress();
+        }
+
+        function toggleZelle(event) {
+            event.stopPropagation();
+            const zbox = document.getElementById('zelle-box');
+            zbox.classList.toggle('active');
+        }
+
+        // Language Switcher Logic
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Update active tab styling
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                // Get selected language
+                const lang = tab.getAttribute('data-lang');
+                const t = translations[lang];
+
+                // Update text content
+                document.getElementById('main-title').innerText = t.title;
+                document.getElementById('cat1-title').innerText = t.cat1;
+                document.getElementById('t-appForm').innerText = t.appForm;
+                document.getElementById('t-btnDownload1').innerText = t.btnDownload1;
+                document.getElementById('t-fee').innerText = t.fee;
+                document.getElementById('t-btnPay').innerText = t.btnPay;
+                document.getElementById('t-zelleInfo').innerHTML = t.zelleInfo;
+                document.getElementById('t-edu').innerText = t.edu;
+                document.getElementById('t-eduSub').innerText = t.eduSub;
+                document.getElementById('t-accept').innerText = t.accept;
+                
+                document.getElementById('cat2-title').innerText = t.cat2;
+                document.getElementById('t-passport').innerText = t.passport;
+                document.getElementById('t-passportSub').innerText = t.passportSub;
+                document.getElementById('t-visa').innerText = t.visa;
+                document.getElementById('t-visaSub').innerText = t.visaSub;
+                document.getElementById('t-i94').innerText = t.i94;
+                document.getElementById('t-i94Sub').innerText = t.i94Sub;
+
+                document.getElementById('cat3-title').innerText = t.cat3;
+                document.getElementById('t-bank').innerText = t.bank;
+                document.getElementById('t-bankSub').innerText = t.bankSub;
+                document.getElementById('t-sponsor').innerText = t.sponsor;
+                document.getElementById('t-sponsorSub').innerText = t.sponsorSub;
+                document.getElementById('t-btnDownload2').innerText = t.btnDownload2;
+                
+                updateProgress();
+            });
+        });
+    </script>
+</body>
+</html>
