@@ -466,6 +466,45 @@
             padding: 1.5rem;
         }
 
+        /* Submission Info Box & Copy Button */
+        .submission-info {
+            text-align: center;
+            padding: 3rem;
+            border: 1px dashed var(--text-color);
+            transition: border-color 0.5s ease;
+        }
+
+        .submission-info:hover {
+            border-style: solid;
+        }
+
+        .copy-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            border: 1px solid var(--text-color);
+            border-radius: 50px; 
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-color);
+            background: transparent;
+            transition: all 0.3s ease;
+        }
+        .copy-btn svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2; fill: none; flex-shrink: 0; }
+        
+        .copy-btn:hover {
+            background: var(--text-color);
+            color: var(--glass-bg); 
+        }
+        
+        .copy-btn.copied {
+            background: var(--success-color);
+            border-color: var(--success-color);
+            color: #ffffff;
+        }
+        .copy-btn.copied svg { stroke: #ffffff; }
+
         /* Tips Marquee (Glass Panel Look) */
         .marquee-wrapper {
             overflow: hidden;
@@ -521,9 +560,6 @@
     <div class="video-background">
         <video id="bg-video-top" autoplay loop muted playsinline>
             <source src="city.mp4" type="video/mp4">
-        </video>
-        <video id="bg-video-bottom" autoplay loop muted playsinline>
-            <source src="Mountain.mp4" type="video/mp4">
         </video>
         <div class="video-overlay"></div>
     </div>
@@ -685,6 +721,23 @@
                 </div>
             </section>
 
+            <section class="section-pad reveal" data-theme-trigger="light" style="padding-top: 0;">
+                <div class="glass-panel submission-info hover-target">
+                    <p style="font-size: 1.1rem; margin-bottom: 1rem; opacity: 0.8; font-weight: 500;" id="t-submitText">Send your completed documents to:</p>
+                    <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 1rem;">
+                        <a href="mailto:J.hong@dreamitny.com" style="font-family: var(--font-display); font-size: clamp(1.25rem, 4vw, 2rem); font-weight: 700; color: var(--success-color);">J.hong@dreamitny.com</a>
+                        
+                        <button class="copy-btn hover-target" id="btn-copy-email" onclick="copyEmail()">
+                            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            <span id="t-copyBtn">Copy</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
         </div>
 
         <section class="marquee-wrapper reveal" data-theme-trigger="light">
@@ -803,6 +856,27 @@
             zbox.classList.toggle('active');
         }
 
+        // Email Copy Logic
+        function copyEmail() {
+            const email = "J.hong@dreamitny.com";
+            navigator.clipboard.writeText(email).then(() => {
+                const btnEl = document.getElementById('btn-copy-email');
+                const btnSpan = document.getElementById('t-copyBtn');
+                const currentLang = document.querySelector('.tab.active').getAttribute('data-lang');
+                const t = translations[currentLang] || translations['en'];
+                
+                btnEl.classList.add('copied');
+                btnSpan.innerText = t.copiedBtn;
+                
+                setTimeout(() => {
+                    btnEl.classList.remove('copied');
+                    btnSpan.innerText = t.copyBtn;
+                }, 2000);
+            }).catch(err => {
+                console.error("Failed to copy text: ", err);
+            });
+        }
+
         // Translation Dictionary
         const translations = {
             en: {
@@ -811,7 +885,8 @@
                 edu: "Education Credential", eduSub: "High school diploma or higher degree", accept: "Acceptance Letter",
                 cat2: "2. Identity & Legal", passport: "Passport", passportSub: "Must be valid for the next 6 months", visa: "Visa", visaSub: "Current visa page in your passport", i94: "I-94 Form", i94Sub: "Official Arrival/Departure Record",
                 cat3: "3. Financial Documents", bank: "Bank Statement", bankSub: "From the last 60 days. At least $15,000 (+$3,500 per dependent)", sponsor: "Financial Support Letter", sponsorSub: "Required if you have a sponsor", btnDownload2: "Download Letter", progress: "Completed",
-                tipsTitle: "QUICK TIPS:", tipsText: "Ensure all scanned copies are clear, legible, and saved in PDF format. Double-check that your passport expiration date is well beyond the 6-month window!"
+                tipsTitle: "QUICK TIPS:", tipsText: "Ensure all scanned copies are clear, legible, and saved in PDF format. Double-check that your passport expiration date is well beyond the 6-month window!",
+                submitText: "Send your completed documents to:", copyBtn: "Copy", copiedBtn: "Copied!"
             },
             es: {
                 cat1: "1. Documentos de Admisión", appForm: "Formulario de Solicitud", btnDownload1: "Descargar",
@@ -819,7 +894,8 @@
                 edu: "Credencial Educativa", eduSub: "Diploma de escuela secundaria o superior", accept: "Carta de Aceptación",
                 cat2: "2. Identidad y Legal", passport: "Pasaporte", passportSub: "Válido por los próximos 6 meses", visa: "Visa", visaSub: "Página de visa actual", i94: "Formulario I-94", i94Sub: "Registro Oficial de Llegada/Salida",
                 cat3: "3. Documentos Financieros", bank: "Estado de Cuenta Bancaria", bankSub: "Últimos 60 días. Mínimo $15,000 (+ $3,500 por dependiente)", sponsor: "Carta de Apoyo Financiero", sponsorSub: "Si tiene un patrocinador", btnDownload2: "Descargar", progress: "Completado",
-                tipsTitle: "CONSEJOS:", tipsText: "Asegúrese de que todas las copias escaneadas sean claras, legibles y estén guardadas en formato PDF. ¡Verifique que la fecha de vencimiento de su pasaporte supere el plazo de 6 meses!"
+                tipsTitle: "CONSEJOS:", tipsText: "Asegúrese de que todas las copias escaneadas sean claras, legibles y estén guardadas en formato PDF. ¡Verifique que la fecha de vencimiento de su pasaporte supere el plazo de 6 meses!",
+                submitText: "Envíe sus documentos completos a:", copyBtn: "Copiar", copiedBtn: "¡Copiado!"
             },
             zh: {
                 cat1: "1. 录取文件", appForm: "申请表", btnDownload1: "下载表格",
@@ -827,7 +903,8 @@
                 edu: "学历证明", eduSub: "高中毕业证或更高学位", accept: "录取通知书",
                 cat2: "2. 身份与法律文件", passport: "护照", passportSub: "未来6个月内有效", visa: "签证", visaSub: "护照内的签证页", i94: "I-94 表格", i94Sub: "官方出入境记录",
                 cat3: "3. 财务文件", bank: "银行对账单", bankSub: "最近60天。至少 $15,000 (每位家属 +$3,500)", sponsor: "资金支持信", sponsorSub: "如有赞助人则需要", btnDownload2: "下载支持信", progress: "已完成",
-                tipsTitle: "温馨提示:", tipsText: "请确保所有扫描件清晰可读，并保存为 PDF 格式。仔细检查您的护照有效期是否远超 6 个月！"
+                tipsTitle: "温馨提示:", tipsText: "请确保所有扫描件清晰可读，并保存为 PDF 格式。仔细检查您的护照有效期是否远超 6 个月！",
+                submitText: "请将完成的文件发送至：", copyBtn: "复制", copiedBtn: "已复制!"
             },
             ko: {
                 cat1: "1. 입학 서류", appForm: "지원서", btnDownload1: "양식 다운로드",
@@ -835,7 +912,8 @@
                 edu: "학력 증명서", eduSub: "고등학교 졸업장 또는 그 이상", accept: "입학 허가서",
                 cat2: "2. 신분 및 법적 서류", passport: "여권", passportSub: "최소 6개월 이상 유효해야 함", visa: "비자", visaSub: "여권 내 현재 비자 사본", i94: "I-94 양식", i94Sub: "공식 출입국 기록",
                 cat3: "3. 재정 서류", bank: "은행 잔고 증명서", bankSub: "최근 60일 이내. 최소 $15,000 (동반 가족 1인당 +$3,500)", sponsor: "재정 지원서", sponsorSub: "스폰서가 있는 경우 필요", btnDownload2: "지원서 다운로드", progress: "완료됨",
-                tipsTitle: "학생 팁:", tipsText: "모든 스캔본이 선명하고 읽기 쉬우며 PDF 형식으로 저장되었는지 확인하세요. 여권 만료일이 6개월 이상 남았는지 다시 한번 확인하세요!"
+                tipsTitle: "학생 팁:", tipsText: "모든 스캔본이 선명하고 읽기 쉬우며 PDF 형식으로 저장되었는지 확인하세요. 여권 만료일이 6개월 이상 남았는지 다시 한번 확인하세요!",
+                submitText: "작성된 서류를 다음 이메일로 보내주세요:", copyBtn: "복사", copiedBtn: "복사됨!"
             },
             th: {
                 cat1: "1. เอกสารการรับสมัคร", appForm: "แบบฟอร์มใบสมัคร", btnDownload1: "ดาวน์โหลดแบบฟอร์ม",
@@ -843,7 +921,8 @@
                 edu: "เอกสารรับรองวุฒิการศึกษา", eduSub: "ประกาศนียบัตรมัธยมปลายหรือสูงกว่า", accept: "จดหมายตอบรับ",
                 cat2: "2. เอกสารยืนยันตัวตน", passport: "หนังสือเดินทาง", passportSub: "ต้องมีอายุเหลือไม่ต่ำกว่า 6 เดือน", visa: "วีซ่า", visaSub: "หน้าวีซ่าปัจจุบันในหนังสือเดินทาง", i94: "แบบฟอร์ม I-94", i94Sub: "บันทึกการเดินทางเข้า/ออก",
                 cat3: "3. เอกสารทางการเงิน", bank: "รายการเดินบัญชี", bankSub: "ย้อนหลัง 60 วัน ขั้นต่ำ $15,000 (+ $3,500 ต่อผู้ติดตาม)", sponsor: "จดหมายรับรองทางการเงิน", sponsorSub: "หากมีผู้สนับสนุน", btnDownload2: "ดาวน์โหลดจดหมาย", progress: "เสร็จสิ้น",
-                tipsTitle: "เคล็ดลับ:", tipsText: "ตรวจสอบให้แน่ใจว่าสำเนาที่สแกนทั้งหมดชัดเจน อ่านออกได้ และบันทึกในรูปแบบ PDF ตรวจสอบวันหมดอายุของหนังสือเดินทางอีกครั้งว่ามีอายุเกิน 6 เดือน!"
+                tipsTitle: "เคล็ดลับ:", tipsText: "ตรวจสอบให้แน่ใจว่าสำเนาที่สแกนทั้งหมดชัดเจน อ่านออกได้ และบันทึกในรูปแบบ PDF ตรวจสอบวันหมดอายุของหนังสือเดินทางอีกครั้งว่ามีอายุเกิน 6 เดือน!",
+                submitText: "ส่งเอกสารที่กรอกครบถ้วนแล้วของคุณไปที่:", copyBtn: "คัดลอก", copiedBtn: "คัดลอกแล้ว!"
             },
             tr: {
                 cat1: "1. Kabul Belgeleri", appForm: "Başvuru Formu", btnDownload1: "Formu İndir",
@@ -851,7 +930,8 @@
                 edu: "Eğitim Belgesi", eduSub: "Lise diploması veya daha üstü", accept: "Kabul Mektubu",
                 cat2: "2. Kimlik ve Yasal Belgeler", passport: "Pasaport", passportSub: "Önümüzdeki 6 ay geçerli olmalı", visa: "Vize", visaSub: "Pasaportunuzdaki vize sayfası", i94: "I-94 Formu", i94Sub: "Resmi Giriş/Çıkış Kaydı",
                 cat3: "3. Finansal Belgeler", bank: "Banka Hesap Özeti", bankSub: "Son 60 gün. En az 15.000$ (bakmakla yükümlü olunan her kişi için +3.500$)", sponsor: "Maddi Destek Mektubu", sponsorSub: "Sponsorunuz varsa gereklidir", btnDownload2: "Mektubu İndir", progress: "Tamamlandı",
-                tipsTitle: "İPUÇLARI:", tipsText: "Taranan tüm kopyaların net, okunaklı ve PDF formatında kaydedilmiş olduğundan emin olun. Pasaportunuzun son kullanma tarihinin 6 aydan fazla olduğunu kontrol edin!"
+                tipsTitle: "İPUÇLARI:", tipsText: "Taranan tüm kopyaların net, okunaklı ve PDF formatında kaydedilmiş olduğundan emin olun. Pasaportunuzun son kullanma tarihinin 6 aydan fazla olduğunu kontrol edin!",
+                submitText: "Tamamlanmış belgelerinizi şuraya gönderin:", copyBtn: "Kopyala", copiedBtn: "Kopyalandı!"
             },
             hi: {
                 cat1: "1. प्रवेश दस्तावेज़", appForm: "आवेदन पत्र", btnDownload1: "फॉर्म डाउनलोड करें",
@@ -859,7 +939,8 @@
                 edu: "शिक्षा क्रेडेंशियल", eduSub: "हाई स्कूल डिप्लोमा या उच्च डिग्री", accept: "स्वीकृति पत्र",
                 cat2: "2. पहचान और कानूनी", passport: "पासपोर्ट", passportSub: "अगले 6 महीनों के लिए वैध होना चाहिए", visa: "वीजा", visaSub: "पासपोर्ट में वर्तमान वीजा पृष्ठ", i94: "I-94 फॉर्म", i94Sub: "आधिकारिक आगमन/प्रस्थान रिकॉर्ड",
                 cat3: "3. वित्तीय दस्तावेज़", bank: "बैंक स्टेटमेंट", bankSub: "पिछले 60 दिन। कम से कम $15,000 (प्रति आश्रित +$3,500)", sponsor: "वित्तीय सहायता पत्र", sponsorSub: "यदि आपका कोई प्रायोजक है तो आवश्यक है", btnDownload2: "पत्र डाउनलोड करें", progress: "पूर्ण हुआ",
-                tipsTitle: "त्वरित सुझाव:", tipsText: "सुनिश्चित करें कि सभी स्कैन की गई प्रतियां स्पष्ट, सुपाठ्य और पीडीएफ प्रारूप में सहेजी गई हैं। दोबारा जांच लें कि आपके पासपोर्ट की समाप्ति तिथि 6 महीने से अधिक है!"
+                tipsTitle: "त्वरित सुझाव:", tipsText: "सुनिश्चित करें कि सभी स्कैन की गई प्रतियां स्पष्ट, सुपाठ्य और पीडीएफ प्रारूप में सहेजी गई हैं। दोबारा जांच लें कि आपके पासपोर्ट की समाप्ति तिथि 6 महीने से अधिक है!",
+                submitText: "अपने पूर्ण दस्तावेज़ यहां भेजें:", copyBtn: "कॉपी करें", copiedBtn: "कॉपी हो गया!"
             },
             bn: {
                 cat1: "1. ভর্তির কাগজপত্র", appForm: "আবেদনপত্র", btnDownload1: "ফর্ম ডাউনলোড করুন",
@@ -867,7 +948,8 @@
                 edu: "শিক্ষাগত যোগ্যতা", eduSub: "হাই স্কুল ডিপ্লোমা বা উচ্চতর ডিগ্রি", accept: "অ্যাকসেপ্টেন্স লেটার",
                 cat2: "2. পরিচয় এবং আইনি", passport: "পাসপোর্ট", passportSub: "পরবর্তী 6 মাসের জন্য বৈধ হতে হবে", visa: "ভিসা", visaSub: "আপনার পাসপোর্টে বর্তমান ভিসার পৃষ্ঠা", i94: "I-94 ফর্ম", i94Sub: "অফিসিয়াল আগমন/প্রস্থান রেকর্ড",
                 cat3: "3. আর্থিক কাগজপত্র", bank: "ব্যাংক স্টেটমেন্ট", bankSub: "গত ৬০ দিনের। অন্তত $15,000 (প্রতি নির্ভরশীল +$3,500)", sponsor: "আর্থিক সহায়তার চিঠি", sponsorSub: "আপনার যদি স্পন্সর থাকে তবে প্রয়োজন", btnDownload2: "চিঠি ডাউনলোড করুন", progress: "সম্পন্ন",
-                tipsTitle: "দ্রুত টিপস:", tipsText: "নিশ্চিত করুন যে সমস্ত স্ক্যান করা কপি স্পষ্ট, পঠনযোগ্য এবং পিডিএফ ফরম্যাটে সেভ করা হয়েছে। আপনার পাসপোর্টের মেয়াদ শেষ হওয়ার তারিখ ৬ মাসের বেশি আছে কিনা তা চেক করুন!"
+                tipsTitle: "দ্রুত টিপস:", tipsText: "নিশ্চিত করুন যে সমস্ত স্ক্যান করা কপি স্পষ্ট, পঠনযোগ্য এবং পিডিএফ ফরম্যাটে সেভ করা হয়েছে। আপনার পাসপোর্টের মেয়াদ শেষ হওয়ার তারিখ ৬ মাসের বেশি আছে কিনা তা চেক করুন!",
+                submitText: "আপনার সম্পূর্ণ নথিপত্র এখানে পাঠান:", copyBtn: "কপি করুন", copiedBtn: "কপি করা হয়েছে!"
             },
             kk: {
                 cat1: "1. Қабылдау құжаттары", appForm: "Өтініш формасы", btnDownload1: "Форманы жүктеу",
@@ -875,7 +957,8 @@
                 edu: "Білім туралы құжат", eduSub: "Орта мектеп дипломы немесе одан жоғары", accept: "Қабылдау хаты",
                 cat2: "2. Жеке куәлік және заңдық", passport: "Төлқұжат", passportSub: "Келесі 6 айға жарамды болуы керек", visa: "Виза", visaSub: "Төлқұжаттағы ағымдағы виза", i94: "I-94 Формасы", i94Sub: "Келу/Кету туралы ресми жазба",
                 cat3: "3. Қаржылық құжаттар", bank: "Банк үзіндісі", bankSub: "Соңғы 60 күн. Кем дегенде $15,000 (+ әр асырауындағы адамға $3,500)", sponsor: "Қаржылық қолдау хаты", sponsorSub: "Егер демеушіңіз болса қажет", btnDownload2: "Хатты жүктеу", progress: "Аяқталды",
-                tipsTitle: "Кеңестер:", tipsText: "Барлық сканерленген көшірмелердің анық, оқылатындығына және PDF пішімінде сақталғанына көз жеткізіңіз. Төлқұжатыңыздың жарамдылық мерзімі 6 айдан асатынын екі рет тексеріңіз!"
+                tipsTitle: "Кеңестер:", tipsText: "Барлық сканерленген көшірмелердің анық, оқылатындығына және PDF пішімінде сақталғанына көз жеткізіңіз. Төлқұжатыңыздың жарамдылық мерзімі 6 айдан асатынын екі рет тексеріңіз!",
+                submitText: "Толықтырылған құжаттарыңызды мына мекенжайға жіберіңіз:", copyBtn: "Көшіру", copiedBtn: "Көшірілді!"
             }
         };
 
@@ -913,6 +996,15 @@
                 document.getElementById('t-sponsorSub').innerText = t.sponsorSub;
                 document.getElementById('t-btnDownload2').innerText = t.btnDownload2;
                 
+                document.getElementById('t-submitText').innerText = t.submitText;
+                
+                // Update copy button text unless it's currently showing "Copied!" state
+                const copyBtnSpan = document.getElementById('t-copyBtn');
+                const copyBtnEl = document.getElementById('btn-copy-email');
+                if (!copyBtnEl.classList.contains('copied')) {
+                    copyBtnSpan.innerText = t.copyBtn;
+                }
+
                 document.getElementById('t-tipsTitle').innerText = t.tipsTitle;
                 document.getElementById('t-tipsText').innerText = t.tipsText;
                 document.getElementById('t-tipsTitleClone').innerText = t.tipsTitle;
